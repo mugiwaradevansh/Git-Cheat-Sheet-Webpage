@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git Cheat Sheet — A to Z</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --bg2: #0f1526;
+      --bg3: #141c33;
+      --panel: #121929;
+      --border: #1e2d4d;
+      --accent1: #00d4ff;
+      --accent2: #7c3aed;
+      --accent3: #10b981;
+      --accent4: #f59e0b;
+      --accent5: #ef4444;
+      --accent6: #ec4899;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --code-bg: #0d1526;
+      --glow1: rgba(0, 212, 255, 0.15);
+      --glow2: rgba(124, 58, 237, 0.15);
+      --card-font-scale: 1;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ── Custom Scrollbar ── */
+    ::-webkit-scrollbar {
+      width: 3px;
+      height: 3px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(10, 14, 26, 0.0);
+      border-radius: 100px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(30, 45, 77, 0.55);
+      border-radius: 100px;
+      box-shadow: 0 0 6px rgba(0, 212, 255, 0.08);
+      transition: background 0.4s, box-shadow 0.4s;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 212, 255, 0.18);
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.22), 0 0 2px rgba(124, 58, 237, 0.18);
+    }
+
+    ::-webkit-scrollbar-thumb:active {
+      background: rgba(124, 58, 237, 0.28);
+      box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
+    }
+
+    /* ── Scroll Buttons (arrows) ── */
+    ::-webkit-scrollbar-button {
+      display: block;
+      width: 3px;
+      height: 14px;
+      background: transparent;
+      border-radius: 100px;
+    }
+
+    /* Up button */
+    ::-webkit-scrollbar-button:vertical:start:decrement {
+      background:
+        linear-gradient(180deg, rgba(0, 212, 255, 0.0) 0%, rgba(0, 212, 255, 0.15) 100%);
+      border-radius: 100px 100px 0 0;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-button:vertical:start:decrement:hover {
+      background: linear-gradient(180deg, rgba(0, 212, 255, 0.0) 0%, rgba(0, 212, 255, 0.35) 100%);
+      box-shadow: 0 0 6px rgba(0, 212, 255, 0.2);
+    }
+
+    /* Down button */
+    ::-webkit-scrollbar-button:vertical:end:increment {
+      background:
+        linear-gradient(180deg, rgba(124, 58, 237, 0.15) 0%, rgba(124, 58, 237, 0.0) 100%);
+      border-radius: 0 0 100px 100px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-button:vertical:end:increment:hover {
+      background: linear-gradient(180deg, rgba(124, 58, 237, 0.35) 0%, rgba(124, 58, 237, 0.0) 100%);
+      box-shadow: 0 0 6px rgba(124, 58, 237, 0.2);
+    }
+
+    /* Hide redundant double-buttons */
+    ::-webkit-scrollbar-button:vertical:start:increment,
+    ::-webkit-scrollbar-button:vertical:end:decrement {
+      display: none;
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    /* Firefox */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(30, 45, 77, 0.4) transparent;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background Mesh ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 20%, rgba(0, 212, 255, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 90% 80%, rgba(124, 58, 237, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Hero Header ── */
+    header {
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.25);
+      border-radius: 100px;
+      padding: 0.4rem 1.2rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent1);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-badge::before {
+      content: '●';
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    h1 .git {
+      color: var(--accent1);
+      text-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
+    }
+
+    h1 .az {
+      color: var(--accent2);
+      text-shadow: 0 0 40px rgba(124, 58, 237, 0.5);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text2);
+      margin-top: 1rem;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 2.5rem auto;
+      padding: 1.2rem 2rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 700px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent1);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.2rem;
+    }
+
+    /* ── Filter Nav ── */
+    .filter-nav {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0 auto 3rem;
+      max-width: 900px;
+      padding: 0 2rem;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1.2rem;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text2);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--accent2);
+      border-color: var(--accent2);
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+    }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 4rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .section-desc {
+      font-size: 0.85rem;
+      color: var(--text3);
+      margin-top: 0.15rem;
+    }
+
+    .section-count {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text3);
+      background: var(--bg3);
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Cards Grid ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 1rem;
+    }
+
+    /* ── Command Card ── */
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.4rem;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 212, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 212, 255, 0.1);
+    }
+
+    /* Color variants */
+    .card.cyan::before {
+      background: var(--accent1);
+    }
+
+    .card.purple::before {
+      background: var(--accent2);
+    }
+
+    .card.green::before {
+      background: var(--accent3);
+    }
+
+    .card.amber::before {
+      background: var(--accent4);
+    }
+
+    .card.red::before {
+      background: var(--accent5);
+    }
+
+    .card.pink::before {
+      background: var(--accent6);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .cmd-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.3rem 0.75rem;
+      border-radius: 8px;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+    }
+
+    .cmd-badge.cyan {
+      background: rgba(0, 212, 255, 0.12);
+      color: var(--accent1);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+    }
+
+    .cmd-badge.purple {
+      background: rgba(124, 58, 237, 0.12);
+      color: #a78bfa;
+      border: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    .cmd-badge.green {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--accent3);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .cmd-badge.amber {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--accent4);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .cmd-badge.red {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--accent5);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .cmd-badge.pink {
+      background: rgba(236, 72, 153, 0.12);
+      color: var(--accent6);
+      border: 1px solid rgba(236, 72, 153, 0.2);
+    }
+
+    .card-title {
+      font-size: calc(1rem * var(--card-font-scale));
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card-desc {
+      font-size: calc(0.84rem * var(--card-font-scale));
+      color: var(--text2);
+      line-height: 1.55;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Code Block ── */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      overflow: hidden;
+    }
+
+    .code-label {
+      font-size: calc(0.68rem * var(--card-font-scale));
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .code-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(0.8rem * var(--card-font-scale));
+      line-height: 1.6;
+      color: var(--text2);
+    }
+
+    .code-line+.code-line {
+      margin-top: 0.3rem;
+    }
+
+    .prompt {
+      color: var(--accent3);
+      flex-shrink: 0;
+    }
+
+    .cmd-text {
+      color: var(--text);
+    }
+
+    .flag {
+      color: #3b82f6;
+    }
+
+    .arg {
+      color: var(--accent4);
+    }
+
+    .comment {
+      color: var(--text3);
+      font-style: italic;
+    }
+
+    .output {
+      color: var(--accent3);
+    }
+
+    /* ── Tip Tag ── */
+    .tip-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: calc(0.72rem * var(--card-font-scale));
+      color: var(--accent4);
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      border-radius: 6px;
+      padding: 0.25rem 0.6rem;
+      margin-top: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .danger-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: calc(0.72rem * var(--card-font-scale));
+      color: var(--accent5);
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      border-radius: 6px;
+      padding: 0.25rem 0.6rem;
+      margin-top: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Flow Diagram ── */
+    .flow-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 3rem;
+      overflow-x: auto;
+    }
+
+    .flow-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.8rem;
+    }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .flow-node {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem 1.2rem;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .flow-node-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .flow-node-sub {
+      font-size: 0.7rem;
+      color: var(--text3);
+      margin-top: 0.2rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .flow-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.1rem;
+    }
+
+    .flow-arrow-cmd {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--accent1);
+      white-space: nowrap;
+    }
+
+    .flow-arrow-line {
+      color: var(--text3);
+      font-size: 1.2rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text3);
+      font-size: 0.82rem;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      .stats-bar {
+        gap: 1.2rem;
+      }
+    }
+
+    /* hidden sections */
+    .section.hidden {
+      display: none;
+    }
+
+    /* ══════════════════════════════
+     RIGHT HOVER SIDEBAR (ChatGPT style)
+  ══════════════════════════════ */
+    .quick-nav {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      padding: 6px 0;
+    }
+
+    .qn-item {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      cursor: pointer;
+      position: relative;
+    }
+
+    /* The pill (visible always as a short bar) */
+    .qn-pill {
+      height: 28px;
+      width: 4px;
+      border-radius: 4px 0 0 4px;
+      background: rgba(30, 45, 77, 0.5);
+      transition: width 0.25s cubic-bezier(.4, 0, .2, 1),
+        background 0.2s,
+        box-shadow 0.2s;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    /* Label inside pill — hidden until hover */
+    .qn-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #fff;
+      opacity: 0;
+      padding: 0 10px 0 12px;
+      transition: opacity 0.18s 0.06s;
+      pointer-events: none;
+      letter-spacing: 0.01em;
+    }
+
+    .qn-icon {
+      font-size: 0.9rem;
+      padding-right: 6px;
+      opacity: 0;
+      transition: opacity 0.18s 0.06s;
+      pointer-events: none;
+    }
+
+    /* Hover state — expand the pill */
+    .qn-item:hover .qn-pill {
+      width: 160px;
+      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .qn-item:hover .qn-label,
+    .qn-item:hover .qn-icon {
+      opacity: 1;
+    }
+
+    /* Active state */
+    .qn-item.qn-active .qn-pill {
+      width: 6px;
+      background: var(--accent1);
+      box-shadow: -2px 0 12px rgba(0, 212, 255, 0.5);
+    }
+
+    /* Color variants per category */
+    .qn-item[data-color="cyan"]:hover .qn-pill {
+      background: var(--accent1);
+    }
+
+    .qn-item[data-color="purple"]:hover .qn-pill {
+      background: var(--accent2);
+    }
+
+    .qn-item[data-color="green"]:hover .qn-pill {
+      background: var(--accent3);
+    }
+
+    .qn-item[data-color="amber"]:hover .qn-pill {
+      background: var(--accent4);
+    }
+
+    .qn-item[data-color="red"]:hover .qn-pill {
+      background: var(--accent5);
+    }
+
+    .qn-item[data-color="pink"]:hover .qn-pill {
+      background: var(--accent6);
+    }
+
+    /* Active dot per color */
+    .qn-item[data-color="cyan"].qn-active .qn-pill {
+      background: var(--accent1);
+      box-shadow: -2px 0 12px rgba(0, 212, 255, 0.6);
+    }
+
+    .qn-item[data-color="purple"].qn-active .qn-pill {
+      background: var(--accent2);
+      box-shadow: -2px 0 12px rgba(124, 58, 237, 0.6);
+    }
+
+    .qn-item[data-color="green"].qn-active .qn-pill {
+      background: var(--accent3);
+      box-shadow: -2px 0 12px rgba(16, 185, 129, 0.6);
+    }
+
+    .qn-item[data-color="amber"].qn-active .qn-pill {
+      background: var(--accent4);
+      box-shadow: -2px 0 12px rgba(245, 158, 11, 0.6);
+    }
+
+    .qn-item[data-color="red"].qn-active .qn-pill {
+      background: var(--accent5);
+      box-shadow: -2px 0 12px rgba(239, 68, 68, 0.6);
+    }
+
+    .qn-item[data-color="pink"].qn-active .qn-pill {
+      background: var(--accent6);
+      box-shadow: -2px 0 12px rgba(236, 72, 153, 0.6);
+    }
+
+    /* Separator line between groups */
+    .qn-sep {
+      width: 4px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.06);
+      margin: 3px 0;
+      align-self: flex-end;
+    }
+
+    @media (max-width: 700px) {
+      .quick-nav {
+        display: none;
+      }
+    }
+
+    /* ── Font Size Control ── */
+    .font-ctrl {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: rgba(12, 18, 35, 0.85);
+      border: 1px solid rgba(30, 45, 77, 0.8);
+      border-radius: 100px;
+      padding: 5px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 212, 255, 0.04);
+    }
+
+    .font-ctrl-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 100px;
+      border: none;
+      background: transparent;
+      color: var(--text2);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.18s;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .font-ctrl-btn:hover:not(:disabled) {
+      background: rgba(0, 212, 255, 0.1);
+      color: var(--accent1);
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+    }
+
+    .font-ctrl-btn:active:not(:disabled) {
+      transform: scale(0.9);
+      background: rgba(0, 212, 255, 0.18);
+    }
+
+    .font-ctrl-btn:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+
+    .font-ctrl-divider {
+      width: 1px;
+      height: 18px;
+      background: rgba(30, 45, 77, 1);
+      margin: 0 2px;
+    }
+
+    .font-ctrl-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text3);
+      padding: 0 10px;
+      min-width: 44px;
+      text-align: center;
+      letter-spacing: 0.05em;
+      user-select: none;
+    }
+
+    .font-ctrl-reset {
+      font-size: 0.65rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 0 8px;
+      height: 32px;
+      border-radius: 100px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      transition: all 0.18s;
+    }
+
+    .font-ctrl-reset:hover {
+      color: var(--accent4);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    /* ── Light Mode Variables ── */
+    body.light {
+      --bg: #f0f4ff;
+      --bg2: #e6ecfa;
+      --bg3: #dce4f5;
+      --panel: #ffffff;
+      --border: #c8d4ee;
+      --accent1: #0099cc;
+      --accent2: #6d28d9;
+      --accent3: #059669;
+      --accent4: #d97706;
+      --accent5: #dc2626;
+      --accent6: #db2777;
+      --text: #0f172a;
+      --text2: #334155;
+      --text3: #64748b;
+      --code-bg: #e8eef8;
+      --glow1: rgba(0, 153, 204, 0.12);
+      --glow2: rgba(109, 40, 217, 0.1);
+    }
+
+    body.light body::before {
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 20%, rgba(0, 153, 204, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 90% 80%, rgba(109, 40, 217, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(5, 150, 105, 0.03) 0%, transparent 70%);
+    }
+
+    body.light .font-ctrl {
+      background: rgba(240, 244, 255, 0.92);
+      border-color: rgba(200, 212, 238, 0.9);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 153, 204, 0.06);
+    }
+
+    /* ── Light mode code block overrides ── */
+    body.light .code-block {
+      background: #dce6f5;
+      border-color: #b8caeb;
+    }
+
+    body.light .code-label {
+      color: #4a6080;
+    }
+
+    body.light .cmd-text {
+      color: #0f172a;
+    }
+
+    body.light .flag {
+      color: #1d4ed8;
+    }
+
+    body.light .arg {
+      color: #b45309;
+    }
+
+    body.light .comment {
+      color: #6b7ea8;
+    }
+
+    body.light .output {
+      color: #047857;
+    }
+
+    body.light .prompt {
+      color: #047857;
+    }
+
+    body.light .code-line {
+      color: #334155;
+    }
+
+    body.light ::-webkit-scrollbar-thumb {
+      background: rgba(180, 196, 230, 0.7);
+    }
+
+    body.light ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 153, 204, 0.25);
+    }
+
+    body.light * {
+      scrollbar-color: rgba(180, 196, 230, 0.7) transparent;
+    }
+
+    /* ── Theme Toggle Button ── */
+    .theme-toggle {
+      width: 32px;
+      height: 32px;
+      border-radius: 100px;
+      border: none;
+      background: transparent;
+      color: var(--text2);
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.18s;
+      line-height: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--accent4);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.15);
+    }
+
+    .theme-toggle .icon-dark,
+    .theme-toggle .icon-light {
+      position: absolute;
+      transition: opacity 0.2s, transform 0.3s;
+    }
+
+    body:not(.light) .theme-toggle .icon-dark {
+      opacity: 1;
+      transform: rotate(0deg);
+    }
+
+    body:not(.light) .theme-toggle .icon-light {
+      opacity: 0;
+      transform: rotate(90deg);
+    }
+
+    body.light .theme-toggle .icon-dark {
+      opacity: 0;
+      transform: rotate(-90deg);
+    }
+
+    body.light .theme-toggle .icon-light {
+      opacity: 1;
+      transform: rotate(0deg);
+    }
+
+    /* ── Footer padding so toolbar never overlaps ── */
+    footer {
+      padding-bottom: 5.5rem;
+    }
+
+    /* ── Hide toolbar when footer is visible ── */
+    .font-ctrl {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .font-ctrl.hidden-by-footer {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(10px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="hero-badge">v2.x · Complete Reference</div>
+    <h1><span class="git">Git</span> Commands <span class="az">A→Z</span></h1>
+    <p class="subtitle">Every command you need · Clear explanations · Real examples</p>
+  </header>
+
+  <div class="container">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-num">60+</div>
+        <div class="stat-label">Commands</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">10</div>
+        <div class="stat-label">Categories</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Use Cases</div>
+      </div>
+    </div>
+
+    <!-- Git Flow Diagram -->
+    <div class="flow-box">
+      <div class="flow-title">⬡ Git Workflow — Data Flow Between Areas</div>
+      <div class="flow">
+        <div class="flow-node">
+          <div class="flow-node-name">Working Dir</div>
+          <div class="flow-node-sub">Your files</div>
+        </div>
+        <div class="flow-arrow">
+          <div class="flow-arrow-cmd">git add</div>
+          <div class="flow-arrow-line">──→</div>
+        </div>
+        <div class="flow-node">
+          <div class="flow-node-name">Staging Area</div>
+          <div class="flow-node-sub">Index</div>
+        </div>
+        <div class="flow-arrow">
+          <div class="flow-arrow-cmd">git commit</div>
+          <div class="flow-arrow-line">──→</div>
+        </div>
+        <div class="flow-node">
+          <div class="flow-node-name">Local Repo</div>
+          <div class="flow-node-sub">.git folder</div>
+        </div>
+        <div class="flow-arrow">
+          <div class="flow-arrow-cmd">git push</div>
+          <div class="flow-arrow-line">──→</div>
+        </div>
+        <div class="flow-node" style="border-color:rgba(0,212,255,0.3)">
+          <div class="flow-node-name" style="color:var(--accent1)">Remote Repo</div>
+          <div class="flow-node-sub">GitHub / GitLab</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Nav -->
+    <div class="filter-nav">
+      <button class="filter-btn active" onclick="filter('all')">All</button>
+      <button class="filter-btn" onclick="filter('setup')">⚙️ Setup</button>
+      <button class="filter-btn" onclick="filter('basics')">📁 Basics</button>
+      <button class="filter-btn" onclick="filter('staging')">➕ Staging</button>
+      <button class="filter-btn" onclick="filter('branching')">🌿 Branching</button>
+      <button class="filter-btn" onclick="filter('remote')">☁️ Remote</button>
+      <button class="filter-btn" onclick="filter('history')">📜 History</button>
+      <button class="filter-btn" onclick="filter('undo')">↩️ Undo</button>
+      <button class="filter-btn" onclick="filter('advanced')">⚡ Advanced</button>
+      <button class="filter-btn" onclick="filter('stash')">🗃 Stash</button>
+      <button class="filter-btn" onclick="filter('tags')">🏷 Tags</button>
+    </div>
+
+    <!-- ════════════════════════════════════════
+       SECTION 1: SETUP & CONFIG
+  ════════════════════════════════════════ -->
+    <div class="section" data-cat="setup">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(0,212,255,0.1); color:var(--accent1)">⚙️</div>
+        <div>
+          <div class="section-title">Setup & Configuration</div>
+          <div class="section-desc">Configure Git identity, editor, and global settings</div>
+        </div>
+        <div class="section-count">6 commands</div>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card cyan">
+          <div class="card-top">
+            <code class="cmd-badge cyan">git config</code>
+          </div>
+          <div class="card-title">Set Username & Email</div>
+          <div class="card-desc">Configure your identity that will be attached to every commit. This is the very first
+            step after installing Git.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git config <span
+                  class="flag">--global</span> user.name <span class="arg">"Raj Patel"</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git config <span
+                  class="flag">--global</span> user.email <span class="arg">"<a href="/cdn-cgi/l/email-protection"
+                    class="__cf_email__"
+                    data-cfemail="c8baa9a288adb0a9a5b8a4ade6aba7a5">[email&#160;protected]</a>"</span></span></div>
+          </div>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-top">
+            <code class="cmd-badge cyan">git config --list</code>
+          </div>
+          <div class="card-title">View All Config</div>
+          <div class="card-desc">List all Git configuration settings currently set on your system, both global and
+            local.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git config <span
+                  class="flag">--list</span></span></div>
+            <div class="code-line"><span class="output">user.name=Raj Patel</span></div>
+            <div class="code-line"><span class="output"><a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                  data-cfemail="15606670673b7078747c792867747f55706d74786579703b767a78">[email&#160;protected]</a></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-top">
+            <code class="cmd-badge cyan">git config editor</code>
+          </div>
+          <div class="card-title">Set Default Editor</div>
+          <div class="card-desc">Choose which editor opens for commit messages. Common choices: vim, nano, code (VS
+            Code).</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git config <span
+                  class="flag">--global</span> core.editor <span class="arg">"code --wait"</span></span></div>
+            <div class="code-line"><span class="comment"># OR for vim:</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git config <span
+                  class="flag">--global</span> core.editor <span class="arg">vim</span></span></div>
+          </div>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-top">
+            <code class="cmd-badge cyan">git config alias</code>
+          </div>
+          <div class="card-title">Create Command Aliases</div>
+          <div class="card-desc">Create shortcuts for long Git commands to boost productivity. Very useful for
+            frequently used commands.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git config <span
+                  class="flag">--global</span> alias.st <span class="arg">status</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git config <span
+                  class="flag">--global</span> alias.co <span class="arg">checkout</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git st</span> <span
+                class="comment"># same as git status</span></div>
+          </div>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-top">
+            <code class="cmd-badge cyan">~/.gitignore</code>
+          </div>
+          <div class="card-title">Global Gitignore</div>
+          <div class="card-desc">Set a global .gitignore file to exclude files like .DS_Store or IDE configs across all
+            repos.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git config <span
+                  class="flag">--global</span> core.excludesfile <span class="arg">~/.gitignore</span></span></div>
+          </div>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-top">
+            <code class="cmd-badge cyan">git help</code>
+          </div>
+          <div class="card-title">Built-in Help</div>
+          <div class="card-desc">Get detailed documentation for any Git command right in the terminal. Opens a man page.
+          </div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git help <span
+                  class="arg">commit</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git <span
+                  class="arg">commit</span> <span class="flag">--help</span></span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+       SECTION 2: BASICS
+  ════════════════════════════════════════ -->
+    <div class="section" data-cat="basics">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(124,58,237,0.1); color:#a78bfa">📁</div>
+        <div>
+          <div class="section-title">Repository Basics</div>
+          <div class="section-desc">Initialize, clone, and check the status of repositories</div>
+        </div>
+        <div class="section-count">5 commands</div>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git init</code></div>
+          <div class="card-title">Initialize a Repository</div>
+          <div class="card-desc">Creates a new empty Git repo in the current directory. Creates a hidden .git folder
+            that tracks everything.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> mkdir my-project && cd
+                my-project</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git init</span></div>
+            <div class="code-line"><span class="output">Initialized empty Git repository in ./my-project/.git/</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git clone</code></div>
+          <div class="card-title">Clone a Repository</div>
+          <div class="card-desc">Download a full copy of an existing remote repository to your local machine, including
+            all history.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git clone <span
+                  class="arg">https://github.com/user/repo.git</span></span></div>
+            <div class="code-line"><span class="comment"># Clone into a custom folder name:</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git clone <span
+                  class="arg">https://github.com/user/repo.git</span> <span class="flag">my-folder</span></span></div>
+          </div>
+        </div>
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git status</code></div>
+          <div class="card-title">Check Working Status</div>
+          <div class="card-desc">Shows which files are staged, unstaged, or untracked. Your most-used command — run this
+            constantly!</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git status</span></div>
+            <div class="code-line"><span class="output">On branch main</span></div>
+            <div class="code-line"><span class="output">Changes not staged for commit:</span></div>
+            <div class="code-line"><span class="output">&nbsp;&nbsp;modified: index.html</span></div>
+          </div>
+          <div class="tip-tag">💡 Use -s for short output</div>
+        </div>
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git diff</code></div>
+          <div class="card-title">View File Differences</div>
+          <div class="card-desc">Shows exact line-by-line changes between working directory and staging area, or between
+            commits.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git diff</span> <span
+                class="comment"># unstaged changes</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git diff <span
+                  class="flag">--staged</span></span> <span class="comment"># staged changes</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git diff <span class="arg">main
+                  feature-branch</span></span></div>
+          </div>
+        </div>
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git show</code></div>
+          <div class="card-title">Show Commit Details</div>
+          <div class="card-desc">Display information about a specific commit — the author, date, message, and exact code
+            changes.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git show</span> <span
+                class="comment"># latest commit</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git show <span
+                  class="arg">a3b4c5d</span></span> <span class="comment"># specific hash</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+       SECTION 3: STAGING & COMMITTING
+  ════════════════════════════════════════ -->
+    <div class="section" data-cat="staging">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(16,185,129,0.1); color:var(--accent3)">➕</div>
+        <div>
+          <div class="section-title">Staging & Committing</div>
+          <div class="section-desc">Add files to stage and save snapshots of your work</div>
+        </div>
+        <div class="section-count">7 commands</div>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git add</code></div>
+          <div class="card-title">Stage Files</div>
+          <div class="card-desc">Move files from working directory to staging area to prepare them for the next commit.
+          </div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git add <span
+                  class="arg">index.html</span></span> <span class="comment"># one file</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git add <span
+                  class="flag">.</span></span> <span class="comment"># all changes</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git add <span
+                  class="flag">-p</span></span> <span class="comment"># interactive patch mode</span></div>
+          </div>
+        </div>
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git commit</code></div>
+          <div class="card-title">Save a Snapshot</div>
+          <div class="card-desc">Records staged changes permanently in local history with a descriptive message. Each
+            commit is a save point.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git commit <span
+                  class="flag">-m</span> <span class="arg">"Add login page"</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git commit <span
+                  class="flag">-am</span> <span class="arg">"Fix nav bug"</span></span> <span class="comment">#
+                add+commit</span></div>
+          </div>
+          <div class="tip-tag">💡 Write messages in imperative mood: "Add feature" not "Added feature"</div>
+        </div>
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git commit --amend</code></div>
+          <div class="card-title">Amend Last Commit</div>
+          <div class="card-desc">Modify the most recent commit — change its message or add forgotten files without
+            making a new commit.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git add <span
+                  class="arg">forgotten.js</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git commit <span
+                  class="flag">--amend</span> <span class="flag">--no-edit</span></span></div>
+            <div class="code-line"><span class="comment"># Change message only:</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git commit <span
+                  class="flag">--amend -m</span> <span class="arg">"New message"</span></span></div>
+          </div>
+          <div class="danger-tag">⚠️ Don't amend pushed commits</div>
+        </div>
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git rm</code></div>
+          <div class="card-title">Remove Tracked Files</div>
+          <div class="card-desc">Remove a file from both the working directory and Git tracking. Stages the removal for
+            next commit.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git rm <span
+                  class="arg">old-file.txt</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git rm <span
+                  class="flag">--cached</span> <span class="arg">secret.env</span></span> <span class="comment"># keep
+                file, stop tracking</span></div>
+          </div>
+        </div>
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git mv</code></div>
+          <div class="card-title">Move / Rename Files</div>
+          <div class="card-desc">Rename or move a file while preserving Git history, instead of manually deleting and
+            re-adding.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git mv <span
+                  class="arg">old-name.js new-name.js</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git mv <span
+                  class="arg">utils/helper.js src/utils/helper.js</span></span></div>
+          </div>
+        </div>
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">.gitignore</code></div>
+          <div class="card-title">Ignore Files</div>
+          <div class="card-desc">Create a .gitignore file to tell Git which files/folders to never track — like
+            node_modules, .env, build folders.</div>
+          <div class="code-block">
+            <div class="code-label">Example .gitignore</div>
+            <div class="code-line"><span class="cmd-text">node_modules/</span></div>
+            <div class="code-line"><span class="cmd-text">.env</span></div>
+            <div class="code-line"><span class="cmd-text">dist/</span></div>
+            <div class="code-line"><span class="cmd-text">*.log</span></div>
+            <div class="code-line"><span class="cmd-text">.DS_Store</span></div>
+          </div>
+        </div>
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git restore</code></div>
+          <div class="card-title">Discard Working Changes</div>
+          <div class="card-desc">Discard unstaged changes in a file, restoring it to the last committed version. Safe
+            alternative to checkout.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git restore <span
+                  class="arg">index.html</span></span> <span class="comment"># discard changes</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git restore <span
+                  class="flag">--staged</span> <span class="arg">index.html</span></span> <span class="comment">#
+                unstage</span></div>
+          </div>
+          <div class="danger-tag">⚠️ Discards changes permanently</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+       SECTION 4: BRANCHING & MERGING
+  ════════════════════════════════════════ -->
+    <div class="section" data-cat="branching">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(245,158,11,0.1); color:var(--accent4)">🌿</div>
+        <div>
+          <div class="section-title">Branching & Merging</div>
+          <div class="section-desc">Create parallel lines of development and combine them</div>
+        </div>
+        <div class="section-count">8 commands</div>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">git branch</code></div>
+          <div class="card-title">Manage Branches</div>
+          <div class="card-desc">List, create, rename, or delete branches. A branch is just a pointer to a commit —
+            lightweight and fast.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git branch</span> <span
+                class="comment"># list branches</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git branch <span
+                  class="arg">feature-login</span></span> <span class="comment"># create</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git branch <span
+                  class="flag">-d</span> <span class="arg">old-branch</span></span> <span class="comment">#
+                delete</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git branch <span
+                  class="flag">-m</span> <span class="arg">new-name</span></span> <span class="comment"># rename
+                current</span></div>
+          </div>
+        </div>
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">git checkout</code></div>
+          <div class="card-title">Switch Branches / Files</div>
+          <div class="card-desc">Switch to a different branch or restore files. Also used to create & switch in one
+            command with -b.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git checkout <span
+                  class="arg">main</span></span> <span class="comment"># switch branch</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git checkout <span
+                  class="flag">-b</span> <span class="arg">feature-login</span></span> <span class="comment">#
+                create+switch</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git checkout <span
+                  class="arg">a3b4c5d -- file.js</span></span> <span class="comment"># restore file</span></div>
+          </div>
+        </div>
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">git switch</code></div>
+          <div class="card-title">Switch Branches (Modern)</div>
+          <div class="card-desc">The newer, dedicated command for switching branches. Cleaner than checkout. Recommended
+            in Git 2.23+.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git switch <span
+                  class="arg">main</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git switch <span
+                  class="flag">-c</span> <span class="arg">new-feature</span></span> <span class="comment">#
+                create+switch</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git switch <span
+                  class="flag">-</span></span> <span class="comment"># back to previous branch</span></div>
+          </div>
+          <div class="tip-tag">💡 Prefer switch over checkout for branches</div>
+        </div>
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">git merge</code></div>
+          <div class="card-title">Merge Branches</div>
+          <div class="card-desc">Integrate changes from one branch into another. Creates a merge commit that ties
+            together the histories.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git switch <span
+                  class="arg">main</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git merge <span
+                  class="arg">feature-login</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git merge <span
+                  class="flag">--no-ff</span> <span class="arg">feature-login</span></span> <span class="comment"># keep
+                merge commit</span></div>
+          </div>
+        </div>
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">git rebase</code></div>
+          <div class="card-title">Rebase Branch</div>
+          <div class="card-desc">Move or replay commits from one branch on top of another, creating a cleaner, linear
+            history.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git switch <span
+                  class="arg">feature-login</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git rebase <span
+                  class="arg">main</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git rebase <span
+                  class="flag">-i</span> <span class="arg">HEAD~3</span></span> <span class="comment"># interactive:
+                squash/edit</span></div>
+          </div>
+          <div class="danger-tag">⚠️ Never rebase shared/public branches</div>
+        </div>
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">git cherry-pick</code></div>
+          <div class="card-title">Pick Specific Commits</div>
+          <div class="card-desc">Apply a specific commit from one branch onto another without merging the entire branch.
+          </div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git cherry-pick <span
+                  class="arg">a3b4c5d</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git cherry-pick <span
+                  class="arg">a3b4c5d..e5f6g7h</span></span> <span class="comment"># range</span></div>
+          </div>
+        </div>
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">merge conflict</code></div>
+          <div class="card-title">Resolve Merge Conflicts</div>
+          <div class="card-desc">When Git can't auto-merge, edit the conflict markers manually, then stage and commit
+            the resolved files.</div>
+          <div class="code-block">
+            <div class="code-label">Resolution Steps</div>
+            <div class="code-line"><span class="comment"># 1. Open conflicting file, edit it</span></div>
+            <div class="code-line"><span class="comment"># 2. Remove <<<<<,=====,>>>>> markers</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git add <span
+                  class="arg">conflicted-file.js</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git commit</span></div>
+          </div>
+        </div>
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">git merge --abort</code></div>
+          <div class="card-title">Abort a Merge</div>
+          <div class="card-desc">Cancel an in-progress merge and restore the state before the merge attempt started.
+          </div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git merge <span
+                  class="flag">--abort</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git rebase <span
+                  class="flag">--abort</span></span> <span class="comment"># abort rebase</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+       SECTION 5: REMOTE
+  ════════════════════════════════════════ -->
+    <div class="section" data-cat="remote">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(0,212,255,0.1); color:var(--accent1)">☁️</div>
+        <div>
+          <div class="section-title">Remote Repositories</div>
+          <div class="section-desc">Connect and sync with GitHub, GitLab, Bitbucket and other remotes</div>
+        </div>
+        <div class="section-count">7 commands</div>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card cyan">
+          <div class="card-top"><code class="cmd-badge cyan">git remote</code></div>
+          <div class="card-title">Manage Remotes</div>
+          <div class="card-desc">Add, remove, rename, and list remote connections. "origin" is the conventional name for
+            the primary remote.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git remote <span
+                  class="flag">-v</span></span> <span class="comment"># list remotes</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git remote add <span
+                  class="arg">origin https://github.com/u/repo.git</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git remote remove <span
+                  class="arg">origin</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git remote rename <span
+                  class="arg">origin upstream</span></span></div>
+          </div>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-top"><code class="cmd-badge cyan">git push</code></div>
+          <div class="card-title">Upload to Remote</div>
+          <div class="card-desc">Send committed changes from your local branch to the remote repository to share with
+            others.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git push <span
+                  class="arg">origin main</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git push <span
+                  class="flag">-u</span> <span class="arg">origin feature-login</span></span> <span class="comment">#
+                set upstream</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git push <span
+                  class="flag">--force-with-lease</span></span> <span class="comment"># safer force push</span></div>
+          </div>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-top"><code class="cmd-badge cyan">git pull</code></div>
+          <div class="card-title">Download & Merge</div>
+          <div class="card-desc">Fetch remote changes AND merge them into your current branch in one step. Equivalent to
+            fetch + merge.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git pull</span> <span
+                class="comment"># pull from tracked remote</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git pull <span
+                  class="arg">origin main</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git pull <span
+                  class="flag">--rebase</span></span> <span class="comment"># rebase instead of merge</span></div>
+          </div>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-top"><code class="cmd-badge cyan">git fetch</code></div>
+          <div class="card-title">Download Without Merging</div>
+          <div class="card-desc">Download remote changes to your local repo without modifying your working branch. Safe
+            way to see what's new.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git fetch <span
+                  class="arg">origin</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git fetch <span
+                  class="flag">--all</span></span> <span class="comment"># fetch all remotes</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git fetch <span
+                  class="flag">--prune</span></span> <span class="comment"># clean deleted remote branches</span></div>
+          </div>
+          <div class="tip-tag">💡 Safer than pull — inspect before merging</div>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-top"><code class="cmd-badge cyan">git push --delete</code></div>
+          <div class="card-title">Delete Remote Branch</div>
+          <div class="card-desc">Remove a branch from the remote repository. Useful for cleaning up merged feature
+            branches.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git push <span
+                  class="arg">origin</span> <span class="flag">--delete</span> <span
+                  class="arg">feature-login</span></span></div>
+            <div class="code-line"><span class="comment"># Short form:</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git push <span
+                  class="arg">origin :feature-login</span></span></div>
+          </div>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-top"><code class="cmd-badge cyan">git remote prune</code></div>
+          <div class="card-title">Prune Remote Branches</div>
+          <div class="card-desc">Remove references to remote branches that no longer exist on the remote (deleted by
+            others).</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git remote prune <span
+                  class="arg">origin</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git fetch <span
+                  class="arg">origin</span> <span class="flag">--prune</span></span> <span class="comment">#
+                combined</span></div>
+          </div>
+        </div>
+
+        <div class="card cyan">
+          <div class="card-top"><code class="cmd-badge cyan">git push --tags</code></div>
+          <div class="card-title">Push Tags to Remote</div>
+          <div class="card-desc">Tags are not pushed automatically with git push. Use this to push all tags, or push a
+            specific one.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git push <span
+                  class="arg">origin</span> <span class="flag">--tags</span></span> <span class="comment"># all
+                tags</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git push <span
+                  class="arg">origin v1.0.0</span></span> <span class="comment"># specific tag</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+       SECTION 6: HISTORY & LOGS
+  ════════════════════════════════════════ -->
+    <div class="section" data-cat="history">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(16,185,129,0.1); color:var(--accent3)">📜</div>
+        <div>
+          <div class="section-title">History & Logs</div>
+          <div class="section-desc">Explore commit history and understand what changed</div>
+        </div>
+        <div class="section-count">6 commands</div>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git log</code></div>
+          <div class="card-title">View Commit History</div>
+          <div class="card-desc">Browse the full commit history of a branch with author, date, and message for each
+            commit.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git log</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git log <span
+                  class="flag">--oneline</span></span> <span class="comment"># compact view</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git log <span
+                  class="flag">--oneline --graph --all</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git log <span
+                  class="flag">--author=</span><span class="arg">"Raj"</span></span></div>
+          </div>
+          <div class="tip-tag">💡 --graph shows branch visuals in terminal</div>
+        </div>
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git log --since</code></div>
+          <div class="card-title">Filter Commits by Date</div>
+          <div class="card-desc">Narrow down history to a specific time range. Useful for sprint reviews or release
+            notes.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git log <span
+                  class="flag">--since=</span><span class="arg">"2 weeks ago"</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git log <span
+                  class="flag">--after=</span><span class="arg">"2024-01-01"</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git log <span
+                  class="flag">--before=</span><span class="arg">"2024-06-01"</span></span></div>
+          </div>
+        </div>
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git log -S</code></div>
+          <div class="card-title">Search Commit Content</div>
+          <div class="card-desc">Find commits that added or removed a specific string. Great for tracking when a
+            function was introduced.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git log <span
+                  class="flag">-S</span><span class="arg">"loginUser"</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git log <span
+                  class="flag">--grep=</span><span class="arg">"fix bug"</span></span> <span class="comment"># search
+                messages</span></div>
+          </div>
+        </div>
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git blame</code></div>
+          <div class="card-title">Who Changed What</div>
+          <div class="card-desc">Show who last modified each line of a file and in which commit. Useful for
+            understanding why code exists.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git blame <span
+                  class="arg">src/app.js</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git blame <span class="flag">-L
+                  10,25</span> <span class="arg">app.js</span></span> <span class="comment"># lines 10-25 only</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git shortlog</code></div>
+          <div class="card-title">Summarize by Author</div>
+          <div class="card-desc">Summarize commit history grouped by author. Great for contribution stats in a project.
+          </div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git shortlog</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git shortlog <span
+                  class="flag">-sn</span></span> <span class="comment"># count only, sorted</span></div>
+          </div>
+        </div>
+
+        <div class="card green">
+          <div class="card-top"><code class="cmd-badge green">git reflog</code></div>
+          <div class="card-title">Reference Log (Lifesaver)</div>
+          <div class="card-desc">Shows a log of ALL HEAD movements including resets, rebases, and checkouts. Can recover
+            "lost" commits!</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git reflog</span></div>
+            <div class="code-line"><span class="output">a3b4c5d HEAD@{0}: commit: Add login</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git checkout <span
+                  class="arg">HEAD@{3}</span></span> <span class="comment"># recover lost commit</span></div>
+          </div>
+          <div class="tip-tag">💡 The ultimate safety net in Git</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+       SECTION 7: UNDO & RESET
+  ════════════════════════════════════════ -->
+    <div class="section" data-cat="undo">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(239,68,68,0.1); color:var(--accent5)">↩️</div>
+        <div>
+          <div class="section-title">Undo & Reset</div>
+          <div class="section-desc">Reverse changes at any stage — safely or forcefully</div>
+        </div>
+        <div class="section-count">5 commands</div>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card red">
+          <div class="card-top"><code class="cmd-badge red">git revert</code></div>
+          <div class="card-title">Safe Undo (Creates New Commit)</div>
+          <div class="card-desc">Undoes a commit by creating a new commit that reverses its changes. History is
+            preserved — safe for shared branches.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git revert <span
+                  class="arg">a3b4c5d</span></span> <span class="comment"># undo one commit</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git revert <span
+                  class="arg">HEAD</span></span> <span class="comment"># undo latest commit</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git revert <span
+                  class="arg">HEAD~3..HEAD</span></span> <span class="comment"># undo last 3</span></div>
+          </div>
+          <div class="tip-tag">💡 Preferred for public/shared branches</div>
+        </div>
+
+        <div class="card red">
+          <div class="card-top"><code class="cmd-badge red">git reset --soft</code></div>
+          <div class="card-title">Undo Commit, Keep Staged</div>
+          <div class="card-desc">Move HEAD back but keep changes staged. Files stay in staging area ready to recommit.
+            History is rewritten.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git reset <span
+                  class="flag">--soft</span> <span class="arg">HEAD~1</span></span> <span class="comment"># undo last
+                commit</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git reset <span
+                  class="flag">--soft</span> <span class="arg">HEAD~3</span></span> <span class="comment"># undo last
+                3</span></div>
+          </div>
+        </div>
+
+        <div class="card red">
+          <div class="card-top"><code class="cmd-badge red">git reset --mixed</code></div>
+          <div class="card-title">Undo Commit, Keep Files</div>
+          <div class="card-desc">Default reset. Moves HEAD back and unstages changes, but files remain modified in
+            working directory.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git reset <span
+                  class="arg">HEAD~1</span></span> <span class="comment"># --mixed is default</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git reset <span
+                  class="flag">--mixed</span> <span class="arg">HEAD~2</span></span></div>
+          </div>
+        </div>
+
+        <div class="card red">
+          <div class="card-top"><code class="cmd-badge red">git reset --hard</code></div>
+          <div class="card-title">Completely Discard Changes</div>
+          <div class="card-desc">Nuclear option — moves HEAD back AND discards ALL changes in staging and working
+            directory. Cannot be undone easily.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git reset <span
+                  class="flag">--hard</span> <span class="arg">HEAD~1</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git reset <span
+                  class="flag">--hard</span> <span class="arg">origin/main</span></span> <span class="comment"># match
+                remote</span></div>
+          </div>
+          <div class="danger-tag">⚠️ Destroys uncommitted work permanently</div>
+        </div>
+
+        <div class="card red">
+          <div class="card-top"><code class="cmd-badge red">git clean</code></div>
+          <div class="card-title">Remove Untracked Files</div>
+          <div class="card-desc">Delete untracked files from working directory. Use -n to preview what will be removed
+            before doing it.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git clean <span
+                  class="flag">-n</span></span> <span class="comment"># dry run - preview</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git clean <span
+                  class="flag">-f</span></span> <span class="comment"># force delete</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git clean <span
+                  class="flag">-fd</span></span> <span class="comment"># delete files + dirs</span></div>
+          </div>
+          <div class="danger-tag">⚠️ Always dry run first with -n</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+       SECTION 8: STASH
+  ════════════════════════════════════════ -->
+    <div class="section" data-cat="stash">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(236,72,153,0.1); color:var(--accent6)">🗃</div>
+        <div>
+          <div class="section-title">Stashing</div>
+          <div class="section-desc">Temporarily shelve changes to switch context quickly</div>
+        </div>
+        <div class="section-count">6 commands</div>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card pink">
+          <div class="card-top"><code class="cmd-badge pink">git stash</code></div>
+          <div class="card-title">Stash Current Changes</div>
+          <div class="card-desc">Save uncommitted changes to a temporary stack and revert to a clean working directory.
+            Perfect for context switching.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git stash</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git stash push <span
+                  class="flag">-m</span> <span class="arg">"WIP: login form"</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git stash <span
+                  class="flag">--include-untracked</span></span></div>
+          </div>
+        </div>
+
+        <div class="card pink">
+          <div class="card-top"><code class="cmd-badge pink">git stash pop</code></div>
+          <div class="card-title">Apply & Remove Stash</div>
+          <div class="card-desc">Restore the most recently stashed changes back to your working directory and remove it
+            from the stash list.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git stash pop</span> <span
+                class="comment"># latest stash</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git stash pop <span
+                  class="arg">stash@{2}</span></span> <span class="comment"># specific one</span></div>
+          </div>
+        </div>
+
+        <div class="card pink">
+          <div class="card-top"><code class="cmd-badge pink">git stash apply</code></div>
+          <div class="card-title">Apply Without Removing</div>
+          <div class="card-desc">Apply stashed changes but KEEP the stash entry in the list. Useful if you need it on
+            multiple branches.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git stash apply</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git stash apply <span
+                  class="arg">stash@{0}</span></span></div>
+          </div>
+        </div>
+
+        <div class="card pink">
+          <div class="card-top"><code class="cmd-badge pink">git stash list</code></div>
+          <div class="card-title">View All Stashes</div>
+          <div class="card-desc">Show all stash entries with their index number. Each entry is labeled stash@{n} where n
+            is the index.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git stash list</span></div>
+            <div class="code-line"><span class="output">stash@{0}: WIP on main: Add auth</span></div>
+            <div class="code-line"><span class="output">stash@{1}: WIP on main: Fix nav</span></div>
+          </div>
+        </div>
+
+        <div class="card pink">
+          <div class="card-top"><code class="cmd-badge pink">git stash drop</code></div>
+          <div class="card-title">Delete a Stash Entry</div>
+          <div class="card-desc">Permanently remove a specific stash entry from the stash list without applying it.
+          </div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git stash drop <span
+                  class="arg">stash@{1}</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git stash clear</span> <span
+                class="comment"># delete ALL stashes</span></div>
+          </div>
+        </div>
+
+        <div class="card pink">
+          <div class="card-top"><code class="cmd-badge pink">git stash branch</code></div>
+          <div class="card-title">Stash to New Branch</div>
+          <div class="card-desc">Create a new branch from a stash entry and apply it there. Useful when stash causes
+            conflicts on current branch.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git stash branch <span
+                  class="arg">new-feature stash@{0}</span></span></div>
+          </div>
+          <div class="tip-tag">💡 Avoids conflicts when stash + branch diverged</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+       SECTION 9: TAGS
+  ════════════════════════════════════════ -->
+    <div class="section" data-cat="tags">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(245,158,11,0.1); color:var(--accent4)">🏷</div>
+        <div>
+          <div class="section-title">Tags & Releases</div>
+          <div class="section-desc">Mark specific commits for releases and milestones</div>
+        </div>
+        <div class="section-count">4 commands</div>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">git tag</code></div>
+          <div class="card-title">Create a Tag</div>
+          <div class="card-desc">Mark a specific commit with a version label. Lightweight tags are just pointers;
+            annotated tags store extra metadata.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git tag <span
+                  class="arg">v1.0.0</span></span> <span class="comment"># lightweight tag</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git tag <span
+                  class="flag">-a</span> <span class="arg">v1.0.0</span> <span class="flag">-m</span> <span
+                  class="arg">"Release v1"</span></span> <span class="comment"># annotated</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git tag <span class="arg">v1.0.0
+                  a3b4c5d</span></span> <span class="comment"># tag specific commit</span></div>
+          </div>
+        </div>
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">git tag --list</code></div>
+          <div class="card-title">List & View Tags</div>
+          <div class="card-desc">Show all existing tags or view details about a specific annotated tag.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git tag</span> <span
+                class="comment"># list all tags</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git tag <span
+                  class="flag">-l</span> <span class="arg">"v1.*"</span></span> <span class="comment"># filter
+                pattern</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git show <span
+                  class="arg">v1.0.0</span></span> <span class="comment"># view tag details</span></div>
+          </div>
+        </div>
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">git tag -d</code></div>
+          <div class="card-title">Delete a Tag</div>
+          <div class="card-desc">Remove a tag locally. To remove from remote, use git push --delete after removing
+            locally.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git tag <span
+                  class="flag">-d</span> <span class="arg">v1.0.0</span></span> <span class="comment"># delete
+                local</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git push <span
+                  class="arg">origin</span> <span class="flag">--delete</span> <span class="arg">v1.0.0</span></span>
+              <span class="comment"># delete remote</span></div>
+          </div>
+        </div>
+
+        <div class="card amber">
+          <div class="card-top"><code class="cmd-badge amber">git describe</code></div>
+          <div class="card-title">Describe a Commit</div>
+          <div class="card-desc">Give a commit a human-readable name based on the nearest tag. Useful for build
+            versioning scripts.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git describe</span></div>
+            <div class="code-line"><span class="output">v1.0.0-3-ga3b4c5d</span></div>
+            <div class="code-line"><span class="comment"># v1.0.0 + 3 commits after + hash</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+       SECTION 10: ADVANCED
+  ════════════════════════════════════════ -->
+    <div class="section" data-cat="advanced">
+      <div class="section-header">
+        <div class="section-icon" style="background:rgba(124,58,237,0.1); color:#a78bfa">⚡</div>
+        <div>
+          <div class="section-title">Advanced Commands</div>
+          <div class="section-desc">Power tools for debugging, history rewriting, and complex workflows</div>
+        </div>
+        <div class="section-count">8 commands</div>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git bisect</code></div>
+          <div class="card-title">Binary Search for Bugs</div>
+          <div class="card-desc">Find exactly which commit introduced a bug using binary search. Git checks out commits
+            in the middle of the range.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git bisect start</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git bisect bad</span> <span
+                class="comment"># current is broken</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git bisect good <span
+                  class="arg">v1.0.0</span></span> <span class="comment"># this was fine</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git bisect reset</span> <span
+                class="comment"># done</span></div>
+          </div>
+        </div>
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git submodule</code></div>
+          <div class="card-title">Embed Other Repos</div>
+          <div class="card-desc">Include another Git repository inside your repository. Common for shared libraries or
+            dependencies.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git submodule add <span
+                  class="arg">https://github.com/u/lib.git</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git submodule update <span
+                  class="flag">--init</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git clone <span
+                  class="flag">--recursive</span> <span class="arg">repo-url</span></span></div>
+          </div>
+        </div>
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git worktree</code></div>
+          <div class="card-title">Multiple Working Trees</div>
+          <div class="card-desc">Check out multiple branches simultaneously in different folders — one repo, multiple
+            working directories.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git worktree add <span
+                  class="arg">../hotfix hotfix-branch</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git worktree list</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git worktree remove <span
+                  class="arg">../hotfix</span></span></div>
+          </div>
+          <div class="tip-tag">💡 Work on a hotfix without stashing current work</div>
+        </div>
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git archive</code></div>
+          <div class="card-title">Export Project Snapshot</div>
+          <div class="card-desc">Create a zip/tar archive of a specific commit or branch without including the .git
+            history folder.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git archive <span
+                  class="flag">--format=zip</span> <span class="arg">HEAD</span> <span class="flag">-o</span> <span
+                  class="arg">release.zip</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git archive <span
+                  class="arg">v1.0.0</span> <span class="flag">--format=tar.gz</span> <span class="flag">-o</span> <span
+                  class="arg">v1.tar.gz</span></span></div>
+          </div>
+        </div>
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git filter-branch</code></div>
+          <div class="card-title">Rewrite History (Advanced)</div>
+          <div class="card-desc">Rewrite history across all commits — e.g. remove a sensitive file that was accidentally
+            committed everywhere.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="comment"># Remove file from all history:</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git filter-branch <span
+                  class="flag">--tree-filter</span> <span class="arg">'rm -f secret.txt'</span> <span
+                  class="flag">HEAD</span></span></div>
+          </div>
+          <div class="danger-tag">⚠️ Use BFG Repo Cleaner for better results</div>
+        </div>
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git gc</code></div>
+          <div class="card-title">Garbage Collection</div>
+          <div class="card-desc">Clean up unnecessary files and optimize local repository. Compresses objects and
+            removes loose refs.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git gc</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git gc <span
+                  class="flag">--aggressive</span></span> <span class="comment"># thorough cleanup</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git gc <span
+                  class="flag">--prune=now</span></span></div>
+          </div>
+        </div>
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git notes</code></div>
+          <div class="card-title">Attach Notes to Commits</div>
+          <div class="card-desc">Add annotations or notes to commits without modifying them. Notes are stored separately
+            from commit history.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git notes add <span
+                  class="flag">-m</span> <span class="arg">"Deployed to prod"</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git notes show <span
+                  class="arg">HEAD</span></span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git log <span
+                  class="flag">--show-notes</span></span></div>
+          </div>
+        </div>
+
+        <div class="card purple">
+          <div class="card-top"><code class="cmd-badge purple">git ls-files</code></div>
+          <div class="card-title">List Tracked Files</div>
+          <div class="card-desc">Show all files currently tracked by Git. Helpful for debugging .gitignore or verifying
+            what's tracked.</div>
+          <div class="code-block">
+            <div class="code-label">Example</div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git ls-files</span> <span
+                class="comment"># all tracked files</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git ls-files <span
+                  class="flag">--others</span></span> <span class="comment"># untracked files</span></div>
+            <div class="code-line"><span class="prompt">$</span><span class="cmd-text"> git ls-files <span
+                  class="flag">--ignored</span></span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /container -->
+
+  <footer>
+    <div style="font-size:1.1rem; color:var(--text2); margin-bottom:0.5rem">⬡ Git Complete Reference — A to Z</div>
+    git version 2.x · All commands verified · Keep calm and commit often
+  </footer>
+
+  <!-- ── Right Hover Sidebar ── -->
+  <nav class="quick-nav" id="quickNav">
+    <div class="qn-item" data-cat="setup" data-color="cyan" onclick="scrollToSection('setup')">
+      <div class="qn-pill"><span class="qn-icon">⚙️</span><span class="qn-label">Setup</span></div>
+    </div>
+    <div class="qn-item" data-cat="basics" data-color="purple" onclick="scrollToSection('basics')">
+      <div class="qn-pill"><span class="qn-icon">📁</span><span class="qn-label">Basics</span></div>
+    </div>
+    <div class="qn-sep"></div>
+    <div class="qn-item" data-cat="staging" data-color="green" onclick="scrollToSection('staging')">
+      <div class="qn-pill"><span class="qn-icon">➕</span><span class="qn-label">Staging</span></div>
+    </div>
+    <div class="qn-item" data-cat="branching" data-color="amber" onclick="scrollToSection('branching')">
+      <div class="qn-pill"><span class="qn-icon">🌿</span><span class="qn-label">Branching</span></div>
+    </div>
+    <div class="qn-sep"></div>
+    <div class="qn-item" data-cat="remote" data-color="cyan" onclick="scrollToSection('remote')">
+      <div class="qn-pill"><span class="qn-icon">☁️</span><span class="qn-label">Remote</span></div>
+    </div>
+    <div class="qn-item" data-cat="history" data-color="green" onclick="scrollToSection('history')">
+      <div class="qn-pill"><span class="qn-icon">📜</span><span class="qn-label">History</span></div>
+    </div>
+    <div class="qn-sep"></div>
+    <div class="qn-item" data-cat="undo" data-color="red" onclick="scrollToSection('undo')">
+      <div class="qn-pill"><span class="qn-icon">↩️</span><span class="qn-label">Undo</span></div>
+    </div>
+    <div class="qn-item" data-cat="stash" data-color="pink" onclick="scrollToSection('stash')">
+      <div class="qn-pill"><span class="qn-icon">🗃</span><span class="qn-label">Stash</span></div>
+    </div>
+    <div class="qn-sep"></div>
+    <div class="qn-item" data-cat="tags" data-color="amber" onclick="scrollToSection('tags')">
+      <div class="qn-pill"><span class="qn-icon">🏷</span><span class="qn-label">Tags</span></div>
+    </div>
+    <div class="qn-item" data-cat="advanced" data-color="purple" onclick="scrollToSection('advanced')">
+      <div class="qn-pill"><span class="qn-icon">⚡</span><span class="qn-label">Advanced</span></div>
+    </div>
+  </nav>
+
+  <!-- ── Font Size Control + Theme Toggle ── -->
+  <div class="font-ctrl" id="fontCtrl">
+    <button class="font-ctrl-btn" id="fontDec" onclick="changeFont(-1)" title="Decrease font size">−</button>
+    <div class="font-ctrl-divider"></div>
+    <div class="font-ctrl-display" id="fontDisplay">100%</div>
+    <div class="font-ctrl-divider"></div>
+    <button class="font-ctrl-btn" id="fontInc" onclick="changeFont(1)" title="Increase font size">+</button>
+    <div class="font-ctrl-divider"></div>
+    <button class="font-ctrl-reset" onclick="resetFont()" title="Reset to default">Reset</button>
+    <div class="font-ctrl-divider"></div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode">
+      <span class="icon-dark">🌙</span>
+      <span class="icon-light">☀️</span>
+    </button>
+  </div>
+
+  <script>
+    /* ── Font Size Control ── */
+    const FONT_STEP = 0.08;
+    const FONT_MIN = 0.6;
+    const FONT_MAX = 1.8;
+    const FONT_DEF = 1.0;
+    let fontScale = FONT_DEF;
+
+    function applyFont() {
+      document.documentElement.style.setProperty('--card-font-scale', fontScale);
+      const pct = Math.round(fontScale * 100);
+      document.getElementById('fontDisplay').textContent = pct + '%';
+      document.getElementById('fontDec').disabled = fontScale <= FONT_MIN;
+      document.getElementById('fontInc').disabled = fontScale >= FONT_MAX;
+      document.getElementById('fontDisplay').style.color =
+        fontScale === FONT_DEF ? 'var(--text3)' : 'var(--accent1)';
+    }
+
+    function changeFont(dir) {
+      fontScale = Math.min(FONT_MAX, Math.max(FONT_MIN, fontScale + dir * FONT_STEP));
+      fontScale = Math.round(fontScale * 1000) / 1000;
+      applyFont();
+    }
+
+    function resetFont() {
+      fontScale = FONT_DEF;
+      applyFont();
+    }
+
+    /* ── Theme Toggle ── */
+    function toggleTheme() {
+      document.body.classList.toggle('light');
+      localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+    }
+
+    /* Restore saved theme */
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light');
+    }
+
+    /* ── Hide toolbar when footer is visible ── */
+    const footerEl = document.querySelector('footer');
+    const ctrlEl = document.getElementById('fontCtrl');
+
+    function checkFooterVisibility() {
+      const footerRect = footerEl.getBoundingClientRect();
+      const ctrlRect = ctrlEl.getBoundingClientRect();
+      /* If the footer's top edge is above the ctrl bar's top edge — overlap */
+      const overlaps = footerRect.top < ctrlRect.bottom + 24;
+      ctrlEl.classList.toggle('hidden-by-footer', overlaps);
+    }
+
+    /* ── Filter buttons ── */
+    function filter(cat) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.section').forEach(s => {
+        if (cat === 'all' || s.dataset.cat === cat) {
+          s.classList.remove('hidden');
+          s.style.animation = 'none';
+          s.offsetHeight;
+          s.style.animation = 'fadeUp 0.4s ease both';
+        } else {
+          s.classList.add('hidden');
+        }
+      });
+    }
+
+    function scrollToSection(cat) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('hidden'));
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.filter-btn').classList.add('active');
+      const target = document.querySelector('.section[data-cat="' + cat + '"]');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    const sections = document.querySelectorAll('.section[data-cat]');
+    const qnItems = document.querySelectorAll('.qn-item[data-cat]');
+
+    function updateActive() {
+      let current = null;
+      sections.forEach(sec => {
+        if (sec.classList.contains('hidden')) return;
+        const rect = sec.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.45) current = sec.dataset.cat;
+      });
+      qnItems.forEach(item => {
+        item.classList.toggle('qn-active', item.dataset.cat === current);
+      });
+      checkFooterVisibility();
+    }
+
+    window.addEventListener('scroll', updateActive, { passive: true });
+    updateActive();
+    applyFont();
+  </script>
+</body>
+
+</html>
