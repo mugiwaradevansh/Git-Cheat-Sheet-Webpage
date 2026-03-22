@@ -8,6 +8,6 @@ A clean, interactive Git cheat sheet covering **60+ commands** across 10 categor
 
 ---
 
-🌐 **Live:** [your-link-here](https://your-link-here)
+🌐 **Live:** [https://learngitnow.pages.dev/](https://learngitnow.pages.dev/)
 
 > Built with pure HTML, CSS & JS — no frameworks, no installs. Just open and use.
